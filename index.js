@@ -31,6 +31,17 @@ let userInputAccepted;
 let playerName;
 let gameData = []; // 8 positions, 0-8 = capacity of 9.
 
+const winningConditions = [
+     [0, 1, 2],
+     [3, 4, 5],
+     [6, 7, 8],
+     [0, 3, 6],
+     [1, 4, 7],
+     [2, 5, 8],
+     [0, 4, 8],
+     [2, 4, 6]
+];
+
 // Hide the board when the screen loads.
 board.classList.add('hide');
 
@@ -90,9 +101,11 @@ function clickPlayCell(event) {
           gameData[cellId] = userSymbol;
           document.getElementById(cellId).innerHTML = userSymbol;
 
-          changePlayer();
+          if (!detectWinOrDraw()) {
+               changePlayer();
+               setTimeout(computerPlayCell, 3000);
 
-          setTimeout(computerPlayCell, 3000);
+          }
      }
 }
 
@@ -110,7 +123,9 @@ function computerPlayCell() {
           }
      }
 
-     changePlayer();
+     if (!detectWinOrDraw()) {
+          changePlayer();
+     }
 }
 
 function changePlayer() {
@@ -140,4 +155,42 @@ function resetGame() {
 
      // Randomize turn.
      randomizeTurn();
+}
+
+function detectWinOrDraw() {
+     let gameWon = false;
+
+     for (let i = 0; i <= 7; i++) {
+          const winCondition = winningConditions[i];
+
+          let a = gameData[winCondition[0]];
+          let b = gameData[winCondition[1]];
+          let c = gameData[winCondition[2]];
+
+          if (a === undefined || b === undefined || c === undefined) {
+               continue;
+          }
+
+          if (a === b && b === c) {
+               gameWon = true;
+               return gameWon;
+          }
+     }
+
+     if (gameWon) {
+          message.innerHTML = `Congratulations, ${playerName}! You win!;`
+          inputAccepted = false;
+          return gameWon;
+     }
+
+     let gameDraw = false;
+
+     if (gameData.length === 8) {
+          message.innerHTML = `Computer: It\'s a draw!`;
+          inputAccepted = false;
+
+          gameDraw = true;
+
+          return gameDraw;
+     }
 }
