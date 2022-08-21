@@ -23,7 +23,6 @@ const cells = document.querySelectorAll('.cell');
 const board = document.getElementById('board');
 const resetButton = document.getElementById('reset');
 
-let computerGoesFirst;
 let computerSymbol;
 let userSymbol;
 let currentPlayer;
@@ -176,7 +175,13 @@ function detectWinOrDraw() {
 
           if (a === b && b === c) {
                // Someone won the game.
-               message.innerHTML = 'Congratulations! You win!';
+               if (currentPlayer === 0) {
+                    message.innerHTML = 'Computer: Bahahaha! I win! Click "Reset" to play again!';
+               }
+               else {
+                    message.innerHTML = `Computer: Oh, no! You have deafeated me, ${playerName}! Click "Reset" to play again!`;
+               }
+
                userInputAccepted = false;
                gameWon = true;
 
