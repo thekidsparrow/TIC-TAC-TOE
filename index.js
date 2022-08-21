@@ -62,9 +62,7 @@ function onSubmit(event) {
      let inputName = form.elements['Name'].value;
      playerName = inputName;
 
-     message.innerHTML = `Hello, ${inputName}. Welcome to Tic-tac-toe.`;
-
-     setTimeout(randomizeTurn, 3000);
+     randomizeTurn();
 
      board.classList.remove('hide');
      form.classList.add('hide');
@@ -81,16 +79,18 @@ function randomizeTurn() {
 
      // If the random number is 0, computer goes first.
      if (randomNumber === 0) {
-          computerGoesFirst = true;
           computerSymbol = 'X';
           userSymbol = 'O';
 
-          computerPlayCell();
+          message.innerHTML = `Computer: Hello, ${playerName}. Welcome to Tic-tac-toe. I'll go first!`;
+
+          setTimeout(computerPlayCell, 3000);
      }
      else {
-          computerGoesFirst = false;
           computerSymbol = 'O';
           userSymbol = 'X';
+
+          message.innerHTML = `Computer: Hello, ${playerName}. Welcome to Tic-tac-toe. You go first!`;
      }
 }
 
@@ -101,10 +101,11 @@ function clickPlayCell(event) {
           gameData[cellId] = userSymbol;
           document.getElementById(cellId).innerHTML = userSymbol;
 
-          if (!detectWinOrDraw()) {
+          let isWinOrDraw = detectWinOrDraw();
+
+          if (!isWinOrDraw) {
                changePlayer();
                setTimeout(computerPlayCell, 3000);
-
           }
      }
 }
@@ -123,7 +124,9 @@ function computerPlayCell() {
           }
      }
 
-     if (!detectWinOrDraw()) {
+     let isWinOrDraw = detectWinOrDraw();
+
+     if (!isWinOrDraw) {
           changePlayer();
      }
 }
@@ -160,7 +163,7 @@ function resetGame() {
 function detectWinOrDraw() {
      let gameWon = false;
 
-     for (let i = 0; i <= 7; i++) {
+     for (let i = 0; i < winningConditions.length; i++) {
           const winCondition = winningConditions[i];
 
           let a = gameData[winCondition[0]];
@@ -172,25 +175,19 @@ function detectWinOrDraw() {
           }
 
           if (a === b && b === c) {
+               // Someone won the game.
+               message.innerHTML = 'Congratulations! You win!';
+               userInputAccepted = false;
                gameWon = true;
-               return gameWon;
+
+               return true;
           }
      }
 
-     if (gameWon) {
-          message.innerHTML = `Congratulations, ${playerName}! You win!;`
-          inputAccepted = false;
-          return gameWon;
-     }
-
-     let gameDraw = false;
-
-     if (gameData.length === 8) {
+     if (gameWon === false && gameData.filter(String).length === 9) {
           message.innerHTML = `Computer: It\'s a draw!`;
           inputAccepted = false;
 
-          gameDraw = true;
-
-          return gameDraw;
+          return true;
      }
 }
