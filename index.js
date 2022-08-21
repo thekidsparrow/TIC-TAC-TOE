@@ -20,13 +20,19 @@
 const form = document.forms[0];
 const message = document.getElementById('message');
 const cells = document.querySelectorAll('.cell');
+const board = document.getElementById('board');
+const resetButton = document.getElementById('reset');
 
 let computerGoesFirst;
 let computerSymbol;
 let userSymbol;
 let currentPlayer;
 let userInputAccepted;
-const gameData = []; // 8 positions, 0-8 = capacity of 9.
+let playerName;
+let gameData = []; // 8 positions, 0-8 = capacity of 9.
+
+// Hide the board when the screen loads.
+board.classList.add('hide');
 
 // When this form posts, we do this.
 form.addEventListener('submit', onSubmit);
@@ -34,14 +40,26 @@ form.addEventListener('submit', onSubmit);
 // For each instance of class="cell", add an event listener that fires clickPlayCell() on click.
 cells.forEach(x => x.addEventListener('click', clickPlayCell));
 
+// When we click reset, we do this.
+resetButton.addEventListener('click', resetGame);
+
 function onSubmit(event) {
      // Stops the form from posting/sending data to another page.
      event.preventDefault();
 
      // Get the name the user put inside of the text box.
      let inputName = form.elements['Name'].value;
+     playerName = inputName;
+
      message.innerHTML = `Hello, ${inputName}. Welcome to Tic-tac-toe.`;
 
+     setTimeout(randomizeTurn, 3000);
+
+     board.classList.remove('hide');
+     form.classList.add('hide');
+}
+
+function randomizeTurn() {
      // Math.Random() generates a number 0.00 - 1.00.
      // Math.Round() rounds that decimal to either 0 or 1.
      let randomNumber = Math.round(Math.random());
@@ -73,7 +91,8 @@ function clickPlayCell(event) {
           document.getElementById(cellId).innerHTML = userSymbol;
 
           changePlayer();
-          computerPlayCell();
+
+          setTimeout(computerPlayCell, 3000);
      }
 }
 
@@ -99,6 +118,7 @@ function changePlayer() {
      // It is now user's turn. Enable input.
      if (currentPlayer === 0) {
           currentPlayer = 1;
+          message.innerHTML = `Computer: It\'s your turn, ${playerName}!`;
           return;
      }
 
@@ -106,6 +126,18 @@ function changePlayer() {
      // It is now computer's turn. Disable input.
      if (currentPlayer === 1) {
           currentPlayer = 0;
+          message.innerHTML = 'Computer: It\'s my turn! 010110... Hm... 010110... What should I do?';
           return;
      }
+}
+
+function resetGame() {
+     // Clear array.
+     gameData = [];
+
+     // Clear HTML cells.
+     cells.forEach(x => x.innerHTML = "");
+
+     // Randomize turn.
+     randomizeTurn();
 }
